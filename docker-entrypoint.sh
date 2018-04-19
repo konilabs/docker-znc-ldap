@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-# Options.
-DATADIR="/znc-data"
 
 # Build modules from source.
 if [ -d "${DATADIR}/modules" ]; then
@@ -22,12 +20,26 @@ if [ -d "${DATADIR}/modules" ]; then
   cd "$cwd"
 fi
 
-# Create default config if it doesn't exist
+# Create default config if it does not exist
 if [ ! -f "${DATADIR}/configs/znc.conf" ]; then
-  echo "Creating a default configuration..."
+  echo "Creating a default znc configuration..."
   mkdir -p "${DATADIR}/configs"
   cp /znc.conf.default "${DATADIR}/configs/znc.conf"
 fi
+
+# Create default saslauthd config if it does not exist
+if [ ! -f "${DATADIR}/configs/saslauthd.conf" ]; then
+  echo "Creating a default saslauthd configuration..."
+  cp /saslauthd.conf.default "${DATADIR}/saslauthd.conf"
+fi
+
+# Create default certificate if it does not exist
+if [ ! -f "${DATADIR}/znc.pem" ]; then
+  echo "Creating a default znc certificate..."
+  openssl req -nodes -newkey rsa:2048 -keyout ${DATADIR}/znc.pem -subj "/CN=ZNC" -x509 -days 3650 -out ${DATADIR}/znc.pem
+fi
+
+
 
 # Make sure $DATADIR is owned by znc user. This effects ownership of the
 # mounted directory on the host machine too.
@@ -36,4 +48,7 @@ chown -R znc:znc "$DATADIR"
 
 # Start ZNC.
 echo "Starting ZNC..."
-exec sudo -u znc znc --foreground --datadir="$DATADIR" $@
+# exec sudo -u znc znc --foreground --datadir="$DATADIR" $@
+# exec /bin/bash
+exec /usr/bin/supervisord -c /supervisord.conf
+

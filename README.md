@@ -1,6 +1,8 @@
 # ZNC for Docker
 
-Run the [ZNC][] IRC Bouncer in a Docker container.
+Run the [ZNC][] IRC Bouncer in a Docker container with LDAP auth and SSL.
+
+This container is based on jimeh/znc image with added LDAP auth and SSL
 
 [ZNC]: http://znc.in
 
@@ -16,20 +18,20 @@ ZNC needs to store settings somewhere, so simplest way to run it is to mount a
 directory from the host machine to `/znc-data` in the container:
 
     mkdir -p $HOME/.znc
-    docker run -d -p 6667 -v $HOME/.znc:/znc-data jimeh/znc
+    docker run -d -p 1234 -v $HOME/.znc:/znc-data konilabs/docker-znc-ldap
 
 This will download the image if needed, and create a default config file in
 your data directory unless you already have a config in place. The default
-config has ZNC listening on port 6667. To see which port on the host has been
+config has ZNC listening on port 1234. To see which port on the host has been
 exposed:
 
     docker ps
 
-Or if you want to specify which port to map the default 6667 port to:
+Or if you want to specify which port to map the default 1234 port to:
 
-    docker run -d -p 36667:6667 -v $HOME/.znc:/znc-data jimeh/znc
+    docker run -d -p 36667:1234 -v $HOME/.znc:/znc-data konilabs/docker-znc-ldap
 
-Resulting in port 36667 on the host mapping to 6667 within the container.
+Resulting in port 36667 on the host mapping to 1234 within the container.
 
 ## Configuring ZNC
 
@@ -38,12 +40,36 @@ username/password combination is `admin`/`admin`. You can access the
 web-interface to create your own user by pointing your web-browser at the opened
 port.
 
-For example, if you passed in `-p 36667:6667` like above when running the
-container, the web-interface would be available on: `http://hostname:36667/`
+For example, if you passed in `-p 36667:1234` like above when running the
+container, the web-interface would be available on: `https://hostname:36667/`
 
 I'd recommend you create your own user by cloning the admin user, then ensure
 your new cloned user is set to be an admin user. Once you login with your new
 user go ahead and delete the default admin user.
+
+### LDAP Authentification
+For LDAP authentification, container uses saslauthd daemon.
+Your LDAP configuration shall be entered inside `{DATADIR}/saslauthd.conf`
+
+`ldap_servers: ldaps://myldapserver.net:636`
+`ldap_search_base: cn=users,dc=myldapserver,dc=net`
+`ldap_filter: (uid=%u)`
+`ldap_bind_dn: uid=root,cn=users,dc=myldapserver,dc=net`
+`ldap_password: ldappassword`
+
+By default ZNC does not create new users located in your LDAP directory
+To change this, you have to login to ZNC through your IRC client and type
+following command :
+`/znc *Cyrusauth CreateUser yes`
+
+If you want ZNC to clone existing user for every new user from your LDAP
+directory
+
+`/znc *Cyrusauth CloneUser [username]`
+
+### SSL
+At first container run, a self signed SSL certificate is generated in 
+`{DATADIR}/znc.pem`. You can replace it after if needed
 
 ## External Modules
 
@@ -81,7 +107,7 @@ First we need to create a volume container:
 And then run the znc container using the `--volumes-from` option instead of
 `-v`:
 
-    docker run -d -p 6667 --name znc --volumes-from znc-data jimeh/znc
+    docker run -d -p 1234 --name znc --volumes-from znc-data konilabs/docker-znc-ldap
 
 You'll want to periodically back up your znc data to the host:
 
@@ -100,7 +126,7 @@ script, the [start-znc][] script simply passes all arguments along to ZNC.
 
 For example, if you want to use the `--makepass` option, you would run:
 
-    docker run -i -t -v $HOME/.znc:/znc-data jimeh/znc --makepass
+    docker run -i -t -v $HOME/.znc:/znc-data konilabs/docker-znc-ldap --makepass
 
 Make note of the use of `-i` and `-t` instead of `-d`. This attaches us to the
 container, so we can interact with ZNC's makepass process. With `-d` it would
@@ -125,6 +151,6 @@ more information.
 ## Building It Yourself
 
 1. Follow Prerequisites above.
-2. Checkout source: `git clone https://github.com/jimeh/docker-znc.git && cd docker-znc`
+2. Checkout source: `git clone https://github.com/konilabs/docker-znc-ldap.git && cd docker-znc`
 3. Build container: `sudo docker build -t $(whoami)/znc .`
-4. Run container: `sudo docker run -d -p 6667 -v $HOME/.znc:/znc-data $(whoami)/znc`
+4. Run container: `sudo docker run -d -p 1234 -v $HOME/.znc:/znc-data $(whoami)/znc`

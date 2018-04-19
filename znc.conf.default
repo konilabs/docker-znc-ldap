@@ -8,14 +8,15 @@
 // But if you feel risky, you might want to read help on /znc saveconfig and /znc rehash.
 // Also check http://en.znc.in/wiki/Configuration
 
-Version = 1.6.1
+Version = 1.6.4
 <Listener l>
-        Port = 6667
+        Port = 1234 
         IPv4 = true
         IPv6 = true
-        SSL = false
+        SSL = true 
 </Listener>
 LoadModule = webadmin
+LoadModule = cyrusauth saslauthd
 
 <User admin>
         Pass       = sha256#00793765305dfc3e7bba28267fe9d9e2c721ebef4e20f3a89720265a89ee6a4f#N!lgZM8S.HZ4zH?)vFoW#
