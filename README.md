@@ -52,9 +52,13 @@ For LDAP authentification, container uses saslauthd daemon.
 Your LDAP configuration shall be entered inside `{DATADIR}/saslauthd.conf`
 
 `ldap_servers: ldaps://myldapserver.net:636`
+
 `ldap_search_base: cn=users,dc=myldapserver,dc=net`
+
 `ldap_filter: (uid=%u)`
+
 `ldap_bind_dn: uid=root,cn=users,dc=myldapserver,dc=net`
+
 `ldap_password: ldappassword`
 
 By default ZNC does not create new users located in your LDAP directory
