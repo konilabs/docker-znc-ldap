@@ -28,7 +28,7 @@ if [ ! -f "${DATADIR}/configs/znc.conf" ]; then
 fi
 
 # Create default saslauthd config if it does not exist
-if [ ! -f "${DATADIR}/configs/saslauthd.conf" ]; then
+if [ ! -f "${DATADIR}/saslauthd.conf" ]; then
   echo "Creating a default saslauthd configuration..."
   cp /saslauthd.conf.default "${DATADIR}/saslauthd.conf"
 fi
