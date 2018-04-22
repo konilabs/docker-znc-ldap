@@ -75,6 +75,9 @@ directory
 At first container run, a self signed SSL certificate is generated in 
 `{DATADIR}/znc.pem`. You can replace it after if needed
 
+`SSL_DOMAIN` variable can be changed to reflect self signed certificate
+domain name generation
+
 ## External Modules
 
 If you need to use external modules, simply place the original `*.cpp` source

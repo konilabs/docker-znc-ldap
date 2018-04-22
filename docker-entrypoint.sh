@@ -36,7 +36,7 @@ fi
 # Create default certificate if it does not exist
 if [ ! -f "${DATADIR}/znc.pem" ]; then
   echo "Creating a default znc certificate..."
-  openssl req -nodes -newkey rsa:2048 -keyout ${DATADIR}/znc.pem -subj "/CN=ZNC" -x509 -days 3650 -out ${DATADIR}/znc.pem
+  openssl req -nodes -newkey rsa:2048 -keyout ${DATADIR}/znc.pem -subj "/CN=${SSL_DOMAIN}" -x509 -days 3650 -out ${DATADIR}/znc.pem
 fi
 
 
