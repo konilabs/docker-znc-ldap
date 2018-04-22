@@ -3,6 +3,7 @@ MAINTAINER Nicolas PERRIN "nicolas@perrin.in"
 
 ENV ZNC_VERSION 1.6.4
 ENV DATADIR /znc-data
+ENV SSL_DOMAIN myznc.net
 
 RUN apt-get update \
     && apt-get install -y sudo wget build-essential libssl-dev libperl-dev \
